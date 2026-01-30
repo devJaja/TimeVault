@@ -86,6 +86,27 @@ contract VaultSnapshot {
         emit SnapshotLimitUpdated(user, max);
     }
     
+    function getBalanceAtTime(address user, uint256 targetTime) external view returns (uint256) {
+        Snapshot[] memory snapshots = userSnapshots[user];
+        require(snapshots.length > 0, "No snapshots available");
+        
+        if (targetTime <= snapshots[0].timestamp) {
+            return snapshots[0].balance;
+        }
+        
+        if (targetTime >= snapshots[snapshots.length - 1].timestamp) {
+            return snapshots[snapshots.length - 1].balance;
+        }
+        
+        for (uint256 i = 1; i < snapshots.length; i++) {
+            if (snapshots[i].timestamp >= targetTime) {
+                return snapshots[i - 1].balance;
+            }
+        }
+        
+        return snapshots[snapshots.length - 1].balance;
+    }
+    
     function getLatestSnapshot(address user) external view returns (uint256, uint256, uint256) {
         require(userSnapshots[user].length > 0, "No snapshots");
         Snapshot memory snapshot = userSnapshots[user][userSnapshots[user].length - 1];
