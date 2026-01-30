@@ -37,6 +37,7 @@ contract ContractRegistry {
         require(bytes(name).length <= 32, "Name too long");
         require(bytes(version).length > 0, "Version required");
         require(bytes(version).length <= 16, "Version too long");
+        require(bytes(category).length <= 16, "Category too long");
         require(!contracts[name].active, "Contract already registered");
         
         contracts[name] = ContractInfo({
