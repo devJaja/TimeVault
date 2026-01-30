@@ -83,6 +83,10 @@ contract ContractRegistry {
         return (info.contractAddress, info.version, info.deployedAt, info.active);
     }
     
+    function getVersionHistory(string memory name) external view returns (string[] memory) {
+        return contractVersionHistory[name];
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
