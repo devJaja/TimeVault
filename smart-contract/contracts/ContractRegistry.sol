@@ -66,6 +66,15 @@ contract ContractRegistry {
         emit ContractUpdated(name, oldAddress, newAddress);
     }
     
+    function deactivateContract(string memory name) external onlyOwner {
+        require(contracts[name].active, "Contract not found");
+        
+        contracts[name].active = false;
+        isRegistered[contracts[name].contractAddress] = false;
+        
+        emit ContractDeactivated(name, contracts[name].contractAddress);
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
