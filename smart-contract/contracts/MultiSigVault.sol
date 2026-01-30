@@ -17,10 +17,11 @@ contract MultiSigVault {
     
     uint256 public required;
     
-    event Deposit(address indexed sender, uint256 amount);
+    event Deposit(address indexed sender, uint256 amount, uint256 balance);
     event TransactionSubmitted(uint256 indexed txId, address indexed to, uint256 amount);
     event TransactionConfirmed(uint256 indexed txId, address indexed owner);
     event TransactionExecuted(uint256 indexed txId);
+    event TransactionRevoked(uint256 indexed txId, address indexed owner);
     
     modifier onlyOwner() {
         require(isOwner[msg.sender], "Not owner");
@@ -59,7 +60,7 @@ contract MultiSigVault {
     }
     
     receive() external payable {
-        emit Deposit(msg.sender, msg.value);
+        emit Deposit(msg.sender, msg.value, address(this).balance);
     }
     
     function submitTransaction(address to, uint256 amount, bytes memory data) 
@@ -124,6 +125,8 @@ contract MultiSigVault {
         
         confirmations[txId][msg.sender] = false;
         transactions[txId].confirmations--;
+        
+        emit TransactionRevoked(txId, msg.sender);
     }
     
     function getOwners() external view returns (address[] memory) {
