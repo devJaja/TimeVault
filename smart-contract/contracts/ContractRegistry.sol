@@ -98,6 +98,28 @@ contract ContractRegistry {
         emit OwnershipTransferred(previousOwner, newOwner);
     }
     
+    function getActiveContracts() external view returns (string[] memory) {
+        uint256 activeCount = 0;
+        
+        for (uint256 i = 0; i < contractNames.length; i++) {
+            if (contracts[contractNames[i]].active) {
+                activeCount++;
+            }
+        }
+        
+        string[] memory activeContracts = new string[](activeCount);
+        uint256 index = 0;
+        
+        for (uint256 i = 0; i < contractNames.length; i++) {
+            if (contracts[contractNames[i]].active) {
+                activeContracts[index] = contractNames[i];
+                index++;
+            }
+        }
+        
+        return activeContracts;
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
