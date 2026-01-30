@@ -287,6 +287,10 @@ contract ContractRegistry {
         return contracts[name].version;
     }
     
+    function getContractDeploymentTime(string memory name) external view returns (uint256) {
+        return contracts[name].deployedAt;
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
