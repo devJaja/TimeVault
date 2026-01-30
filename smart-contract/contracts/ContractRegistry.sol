@@ -201,6 +201,30 @@ contract ContractRegistry {
         }
     }
     
+    function getContractsByVersion(string memory version) external view returns (string[] memory) {
+        uint256 count = 0;
+        
+        for (uint256 i = 0; i < contractNames.length; i++) {
+            if (keccak256(bytes(contracts[contractNames[i]].version)) == keccak256(bytes(version)) && 
+                contracts[contractNames[i]].active) {
+                count++;
+            }
+        }
+        
+        string[] memory versionContracts = new string[](count);
+        uint256 index = 0;
+        
+        for (uint256 i = 0; i < contractNames.length; i++) {
+            if (keccak256(bytes(contracts[contractNames[i]].version)) == keccak256(bytes(version)) && 
+                contracts[contractNames[i]].active) {
+                versionContracts[index] = contractNames[i];
+                index++;
+            }
+        }
+        
+        return versionContracts;
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
