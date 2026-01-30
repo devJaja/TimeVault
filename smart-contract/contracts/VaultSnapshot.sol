@@ -79,6 +79,11 @@ contract VaultSnapshot {
         return result;
     }
     
+    function setMaxSnapshots(address user, uint256 max) external {
+        require(max > 0 && max <= 10000, "Invalid max snapshots");
+        maxSnapshots[user] = max;
+    }
+    
     function getLatestSnapshot(address user) external view returns (uint256, uint256, uint256) {
         require(userSnapshots[user].length > 0, "No snapshots");
         Snapshot memory snapshot = userSnapshots[user][userSnapshots[user].length - 1];
