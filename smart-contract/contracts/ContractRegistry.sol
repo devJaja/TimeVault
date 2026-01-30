@@ -63,6 +63,8 @@ contract ContractRegistry {
     function updateContract(string memory name, address newAddress, string memory newVersion) external onlyOwner {
         require(contracts[name].active, "Contract not found");
         require(newAddress != address(0), "Invalid address");
+        require(bytes(newVersion).length > 0, "Version required");
+        require(bytes(newVersion).length <= 16, "Version too long");
         
         address oldAddress = contracts[name].contractAddress;
         isRegistered[oldAddress] = false;
