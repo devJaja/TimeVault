@@ -332,6 +332,18 @@ contract ContractRegistry {
         return true;
     }
     
+    function getContractNameByAddress(address contractAddress) external view returns (string memory) {
+        require(isRegistered[contractAddress], "Address not registered");
+        
+        for (uint256 i = 0; i < contractNames.length; i++) {
+            if (contracts[contractNames[i]].contractAddress == contractAddress) {
+                return contractNames[i];
+            }
+        }
+        
+        return "";
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
