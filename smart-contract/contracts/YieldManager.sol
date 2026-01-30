@@ -12,6 +12,7 @@ contract YieldManager {
     
     mapping(uint256 => YieldStrategy) public strategies;
     mapping(address => mapping(uint256 => uint256)) public userDeposits;
+    mapping(address => mapping(uint256 => uint256)) public userDepositTime;
     mapping(address => uint256) public userRewards;
     uint256 public strategyCount;
     address public owner;
@@ -52,6 +53,7 @@ contract YieldManager {
         require(msg.value == amount, "Value mismatch");
         
         userDeposits[msg.sender][strategyId] += amount;
+        userDepositTime[msg.sender][strategyId] = block.timestamp;
         strategies[strategyId].totalDeposited += amount;
         
         emit Deposited(msg.sender, strategyId, amount);
