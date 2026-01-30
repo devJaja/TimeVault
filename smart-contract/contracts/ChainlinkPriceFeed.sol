@@ -22,6 +22,7 @@ contract ChainlinkPriceFeed {
     
     function addPriceFeed(string memory symbol, address feedAddress) external {
         require(feedAddress != address(0), "Invalid feed address");
+        require(bytes(symbol).length > 0, "Symbol cannot be empty");
         priceFeeds[symbol] = AggregatorV3Interface(feedAddress);
         emit PriceFeedAdded(symbol, feedAddress);
     }
