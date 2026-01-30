@@ -159,56 +159,55 @@ contract SavingsChallenge is Ownable {
      * @dev Allows a winner to claim their reward after the challenge has been resolved.
      * @param _challengeId The ID of the challenge.
      */
-                            function claimReward(uint256 _challengeId) public {
-                                Challenge storage challenge = challenges[_challengeId];
-                                if (challenge.creator == address(0)) revert SavingsChallenge__ChallengeDoesNotExist();
-                                if (challenge.status != ChallengeStatus.Resolved) revert SavingsChallenge__ChallengeNotResolved();
-                        
-                                Participant storage participant = challenge.participants[msg.sender];
-                                if (!participant.joined) revert SavingsChallenge__NotParticipant();
-                                if (!participant.hasMetGoal) revert SavingsChallenge__ParticipantDidNotMeetGoal();
-                                if (participant.hasClaimedReward) revert SavingsChallenge__RewardAlreadyClaimed();
-                                if (challenge.winnerCount == 0) revert SavingsChallenge__NoWinners();
-                        
-                                uint256 rewardAmount = challenge.rewardPool / challenge.winnerCount;
-                                participant.hasClaimedReward = true;
-                        
-                                (bool success, ) = msg.sender.call{value: rewardAmount}("");
-                                require(success, "SavingsChallenge: Failed to send reward");
-                        
-                                emit RewardClaimed(_challengeId, msg.sender, rewardAmount);
-                            }                                /**
+    function claimReward(uint256 _challengeId) public {
+        Challenge storage challenge = challenges[_challengeId];
+        if (challenge.creator == address(0)) revert SavingsChallenge__ChallengeDoesNotExist();
+        if (challenge.status != ChallengeStatus.Resolved) revert SavingsChallenge__ChallengeNotResolved();
+
+        Participant storage participant = challenge.participants[msg.sender];
+        if (!participant.joined) revert SavingsChallenge__NotParticipant();
+        if (!participant.hasMetGoal) revert SavingsChallenge__ParticipantDidNotMeetGoal();
+        if (participant.hasClaimedReward) revert SavingsChallenge__RewardAlreadyClaimed();
+        if (challenge.winnerCount == 0) revert SavingsChallenge__NoWinners();
+
+        uint256 rewardAmount = challenge.rewardPool / challenge.winnerCount;
+        participant.hasClaimedReward = true;
+
+        (bool success, ) = msg.sender.call{value: rewardAmount}("");
+        if (!success) revert SavingsChallenge__EtherTransferFailed();
+
+        emit RewardClaimed(_challengeId, msg.sender, rewardAmount);
+    }                                /**
      * @dev Allows the challenge creator to cancel an open challenge before its deadline.
      *      Participation fees are refunded. Contributions are refunded.
      * @param _challengeId The ID of the challenge to cancel.
      */
-    function cancelChallenge(uint256 _challengeId) public {
-        Challenge storage challenge = challenges[_challengeId];
-        require(challenge.creator != address(0), "SavingsChallenge: Challenge does not exist");
-        require(msg.sender == challenge.creator, "SavingsChallenge: Only creator can cancel");
-        require(challenge.status == ChallengeStatus.Open, "SavingsChallenge: Challenge is not open");
-        require(block.timestamp < challenge.deadline, "SavingsChallenge: Cannot cancel after deadline");
-
-        challenge.status = ChallengeStatus.Canceled;
-
-        for (uint i = 0; i < challenge.participantAddresses.length; i++) {
-            address participantAddress = challenge.participantAddresses[i];
-            Participant storage participant = challenge.participants[participantAddress];
-
-            if (participant.joined) {
-                uint256 refundAmount = challenge.participationFee + participant.contributedAmount;
-                if (refundAmount > 0) {
-                    (bool success, ) = participantAddress.call{value: refundAmount}("");
-                    require(success, "SavingsChallenge: Failed to refund participant");
+                function cancelChallenge(uint256 _challengeId) public {
+                    Challenge storage challenge = challenges[_challengeId];
+                    if (challenge.creator == address(0)) revert SavingsChallenge__ChallengeDoesNotExist();
+                    if (msg.sender != challenge.creator) revert SavingsChallenge__OnlyCreatorCanCancel();
+                    if (challenge.status != ChallengeStatus.Open) revert SavingsChallenge__ChallengeNotOpen();
+                    if (block.timestamp >= challenge.deadline) revert SavingsChallenge__CannotCancelAfterDeadline();
+            
+                    challenge.status = ChallengeStatus.Canceled;
+            
+                    for (uint i = 0; i < challenge.participantAddresses.length; i++) {
+                        address participantAddress = challenge.participantAddresses[i];
+                        Participant storage participant = challenge.participants[participantAddress];
+            
+                        if (participant.joined) {
+                            uint256 refundAmount = challenge.participationFee + participant.contributedAmount;
+                            if (refundAmount > 0) {
+                                (bool success, ) = participantAddress.call{value: refundAmount}("");
+                                if (!success) revert SavingsChallenge__EtherTransferFailed();
+                            }
+                        }
+                    }
+                    challenge.rewardPool = 0; // All funds refunded
+                    emit ChallengeCanceled(_challengeId, msg.sender);
                 }
-            }
-        }
-        challenge.rewardPool = 0; // All funds refunded
-        emit ChallengeCanceled(_challengeId, msg.sender);
-    }
-
-
-    // --- Getter Functions ---
+                
+                // --- Getter Functions ---
 
     /**
      * @dev Returns details of a specific challenge.
