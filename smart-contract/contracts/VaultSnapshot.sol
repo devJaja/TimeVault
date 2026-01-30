@@ -188,6 +188,10 @@ contract VaultSnapshot {
         emit SnapshotsCleared(user);
     }
     
+    function isSnapshotDue(address user) external view returns (bool) {
+        return block.timestamp >= lastSnapshotTime[user] + minSnapshotInterval;
+    }
+    
     function getLatestSnapshot(address user) external view returns (uint256, uint256, uint256) {
         require(userSnapshots[user].length > 0, "No snapshots");
         Snapshot memory snapshot = userSnapshots[user][userSnapshots[user].length - 1];
