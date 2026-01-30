@@ -16,6 +16,7 @@ contract VaultSnapshot {
     
     event SnapshotTaken(address indexed user, uint256 balance, uint256 timestamp);
     event SnapshotLimitUpdated(address indexed user, uint256 newLimit);
+    event SnapshotsCleared(address indexed user);
     
     function takeSnapshot(address user, uint256 balance) external {
         require(user != address(0), "Invalid user");
@@ -145,6 +146,7 @@ contract VaultSnapshot {
         require(user != address(0), "Invalid user");
         delete userSnapshots[user];
         lastSnapshotTime[user] = 0;
+        emit SnapshotsCleared(user);
     }
     
     function getLatestSnapshot(address user) external view returns (uint256, uint256, uint256) {
