@@ -227,6 +227,13 @@ contract YieldManager {
         owner = newOwner;
     }
     
+    function pauseAllStrategies() external onlyOwner {
+        for (uint256 i = 0; i < strategyCount; i++) {
+            strategies[i].active = false;
+            emit StrategyDeactivated(i);
+        }
+    }
+    
     function getStrategy(uint256 strategyId) external view returns (YieldStrategy memory) {
         return strategies[strategyId];
     }
