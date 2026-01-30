@@ -60,6 +60,38 @@ contract YieldManagerTest is Test {
         assertEq(rewards, 0.1 ether); // 10% APY
     }
     
+    function testDeactivateStrategy() public {
+        yieldManager.addStrategy(address(0x123), "Test Strategy", 1000);
+        yieldManager.deactivateStrategy(0);
+        
+        YieldManager.YieldStrategy memory strategy = yieldManager.getStrategy(0);
+        assertFalse(strategy.active);
+    }
+    
+    function testUpdateAPY() public {
+        yieldManager.addStrategy(address(0x123), "Test Strategy", 1000);
+        yieldManager.updateStrategyAPY(0, 2000);
+        
+        YieldManager.YieldStrategy memory strategy = yieldManager.getStrategy(0);
+        assertEq(strategy.apy, 2000);
+    }
+    
+    function testClaimRewards() public {
+        yieldManager.addStrategy(address(0x123), "Test Strategy", 1000);
+        
+        vm.deal(user1, 1 ether);
+        vm.prank(user1);
+        yieldManager.deposit{value: 1 ether}(0, 1 ether);
+        
+        // Fast forward time
+        vm.warp(block.timestamp + 365 days);
+        
+        vm.prank(user1);
+        yieldManager.claimRewards(0);
+        
+        assertGt(yieldManager.userRewards(user1), 0);
+    }
+    
     function testFailDepositInactiveStrategy() public {
         yieldManager.addStrategy(address(0x123), "Test Strategy", 1000);
         
