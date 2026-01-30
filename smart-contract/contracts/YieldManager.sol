@@ -132,6 +132,16 @@ contract YieldManager {
         return activeStrategies;
     }
     
+    function getUserTotalDeposits(address user) external view returns (uint256) {
+        uint256 total = 0;
+        
+        for (uint256 i = 0; i < strategyCount; i++) {
+            total += userDeposits[user][i];
+        }
+        
+        return total;
+    }
+    
     function getStrategy(uint256 strategyId) external view returns (YieldStrategy memory) {
         return strategies[strategyId];
     }
