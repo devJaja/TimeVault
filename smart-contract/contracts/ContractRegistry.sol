@@ -263,6 +263,12 @@ contract ContractRegistry {
         }
     }
     
+    function getLatestVersion(string memory name) external view returns (string memory) {
+        string[] memory versions = contractVersionHistory[name];
+        require(versions.length > 0, "No versions found");
+        return versions[versions.length - 1];
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
