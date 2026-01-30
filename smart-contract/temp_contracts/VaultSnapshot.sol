@@ -124,12 +124,12 @@ contract VaultSnapshot {
         return snapshots[snapshots.length - 1].balance;
     }
     
-    function getGrowthRate(address user, uint256 days) external view returns (int256) {
-        require(days > 0, "Days must be positive");
+    function getGrowthRate(address user, uint256 numDays) external view returns (int256) {
+        require(numDays > 0, "Days must be positive");
         Snapshot[] memory snapshots = userSnapshots[user];
         require(snapshots.length >= 2, "Need at least 2 snapshots");
         
-        uint256 targetTime = block.timestamp - (days * 86400);
+        uint256 targetTime = block.timestamp - (numDays * 86400);
         uint256 oldBalance = this.getBalanceAtTime(user, targetTime);
         uint256 currentBalance = snapshots[snapshots.length - 1].balance;
         
@@ -138,12 +138,12 @@ contract VaultSnapshot {
         return int256((currentBalance * 10000) / oldBalance) - 10000; // Return as basis points
     }
     
-    function getMinBalance(address user, uint256 days) external view returns (uint256) {
-        require(days > 0, "Days must be positive");
+    function getMinBalance(address user, uint256 numDays) external view returns (uint256) {
+        require(numDays > 0, "Days must be positive");
         Snapshot[] memory snapshots = userSnapshots[user];
         require(snapshots.length > 0, "No snapshots available");
         
-        uint256 targetTime = block.timestamp - (days * 86400);
+        uint256 targetTime = block.timestamp - (numDays * 86400);
         uint256 minBalance = type(uint256).max;
         bool found = false;
         
@@ -159,12 +159,12 @@ contract VaultSnapshot {
         return found ? minBalance : 0;
     }
     
-    function getMaxBalance(address user, uint256 days) external view returns (uint256) {
-        require(days > 0, "Days must be positive");
+    function getMaxBalance(address user, uint256 numDays) external view returns (uint256) {
+        require(numDays > 0, "Days must be positive");
         Snapshot[] memory snapshots = userSnapshots[user];
         require(snapshots.length > 0, "No snapshots available");
         
-        uint256 targetTime = block.timestamp - (days * 86400);
+        uint256 targetTime = block.timestamp - (numDays * 86400);
         uint256 maxBalance = 0;
         
         for (uint256 i = 0; i < snapshots.length; i++) {
@@ -176,12 +176,12 @@ contract VaultSnapshot {
         return maxBalance;
     }
     
-    function getAverageBalance(address user, uint256 days) external view returns (uint256) {
-        require(days > 0, "Days must be positive");
+    function getAverageBalance(address user, uint256 numDays) external view returns (uint256) {
+        require(numDays > 0, "Days must be positive");
         Snapshot[] memory snapshots = userSnapshots[user];
         require(snapshots.length > 0, "No snapshots available");
         
-        uint256 targetTime = block.timestamp - (days * 86400);
+        uint256 targetTime = block.timestamp - (numDays * 86400);
         uint256 sum = 0;
         uint256 count = 0;
         

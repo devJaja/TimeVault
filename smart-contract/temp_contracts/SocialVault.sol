@@ -41,7 +41,7 @@ contract SocialVault is Ownable {
                 if (!isMember[msg.sender]) revert SocialVault__CallerNotMember();
                 _;
             }
-            modifier onlyMember(address _addr) {
+            modifier onlyMemberAddress(address _addr) {
                 if (!isMember[_addr]) revert SocialVault__CallerNotMember(); // Using same error for consistency
                 _;
             }
@@ -72,7 +72,7 @@ contract SocialVault is Ownable {
      *      Requires the member's contribution to be zero before removal.
      * @param _memberToRemove The address of the member to remove.
      */
-    function removeMember(address _memberToRemove) public onlyOwner onlyMember(_memberToRemove) {
+    function removeMember(address _memberToRemove) public onlyOwner onlyMemberAddress(_memberToRemove) {
         if (_memberToRemove == owner()) revert SocialVault__CannotRemoveOwner();
         if (contributions[_memberToRemove] != 0) revert SocialVault__MemberHasFunds();
 

@@ -76,12 +76,12 @@ contract YieldManager {
     }
     
     function calculateRewards(address user, uint256 strategyId) external view returns (uint256) {
-        uint256 deposit = userDeposits[user][strategyId];
+        uint256 userDeposit = userDeposits[user][strategyId];
         uint256 apy = strategies[strategyId].apy;
         uint256 timeElapsed = block.timestamp - userDepositTime[user][strategyId];
         
         // Calculate rewards based on time elapsed (annual rate)
-        return (deposit * apy * timeElapsed) / (10000 * 365 days);
+        return (userDeposit * apy * timeElapsed) / (10000 * 365 days);
     }
     
     function deactivateStrategy(uint256 strategyId) external onlyOwner {
@@ -232,6 +232,15 @@ contract YieldManager {
             strategies[i].active = false;
             emit StrategyDeactivated(i);
         }
+    }
+    
+    function getStrategyUtilization(uint256 strategyId) external view returns (uint256) {
+        require(strategyId < strategyCount, "Invalid strategy");
+        
+        uint256 totalTVL = this.getTotalValueLocked();
+        if (totalTVL == 0) return 0;
+        
+        return (strategies[strategyId].totalDeposited * 10000) / totalTVL; // Return as basis points
     }
     
     function getStrategy(uint256 strategyId) external view returns (YieldStrategy memory) {
