@@ -225,6 +225,31 @@ contract ContractRegistry {
         return versionContracts;
     }
     
+    function getContractsByDeploymentTime(uint256 startTime, uint256 endTime) external view returns (string[] memory) {
+        require(startTime <= endTime, "Invalid time range");
+        uint256 count = 0;
+        
+        for (uint256 i = 0; i < contractNames.length; i++) {
+            uint256 deployTime = contracts[contractNames[i]].deployedAt;
+            if (deployTime >= startTime && deployTime <= endTime && contracts[contractNames[i]].active) {
+                count++;
+            }
+        }
+        
+        string[] memory timeContracts = new string[](count);
+        uint256 index = 0;
+        
+        for (uint256 i = 0; i < contractNames.length; i++) {
+            uint256 deployTime = contracts[contractNames[i]].deployedAt;
+            if (deployTime >= startTime && deployTime <= endTime && contracts[contractNames[i]].active) {
+                timeContracts[index] = contractNames[i];
+                index++;
+            }
+        }
+        
+        return timeContracts;
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
