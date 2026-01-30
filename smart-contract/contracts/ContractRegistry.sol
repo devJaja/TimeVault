@@ -277,6 +277,12 @@ contract ContractRegistry {
         return contracts[name].contractAddress;
     }
     
+    function renounceOwnership() external onlyOwner {
+        address previousOwner = owner;
+        owner = address(0);
+        emit OwnershipTransferred(previousOwner, address(0));
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
