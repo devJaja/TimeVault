@@ -110,6 +110,28 @@ contract YieldManager {
         return allStrategies;
     }
     
+    function getActiveStrategies() external view returns (YieldStrategy[] memory) {
+        uint256 activeCount = 0;
+        
+        for (uint256 i = 0; i < strategyCount; i++) {
+            if (strategies[i].active) {
+                activeCount++;
+            }
+        }
+        
+        YieldStrategy[] memory activeStrategies = new YieldStrategy[](activeCount);
+        uint256 index = 0;
+        
+        for (uint256 i = 0; i < strategyCount; i++) {
+            if (strategies[i].active) {
+                activeStrategies[index] = strategies[i];
+                index++;
+            }
+        }
+        
+        return activeStrategies;
+    }
+    
     function getStrategy(uint256 strategyId) external view returns (YieldStrategy memory) {
         return strategies[strategyId];
     }
