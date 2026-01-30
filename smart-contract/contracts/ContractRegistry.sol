@@ -173,6 +173,11 @@ contract ContractRegistry {
         return categoryContracts;
     }
     
+    function setContractCategory(string memory name, string memory category) external onlyOwner {
+        require(contracts[name].contractAddress != address(0), "Contract not found");
+        contractCategories[name] = category;
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
