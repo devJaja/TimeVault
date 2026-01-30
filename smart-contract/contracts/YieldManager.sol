@@ -198,6 +198,28 @@ contract YieldManager {
         strategyMinDeposit[strategyId] = minDeposit;
     }
     
+    function getUserStrategies(address user) external view returns (uint256[] memory) {
+        uint256 count = 0;
+        
+        for (uint256 i = 0; i < strategyCount; i++) {
+            if (userDeposits[user][i] > 0) {
+                count++;
+            }
+        }
+        
+        uint256[] memory userStrategies = new uint256[](count);
+        uint256 index = 0;
+        
+        for (uint256 i = 0; i < strategyCount; i++) {
+            if (userDeposits[user][i] > 0) {
+                userStrategies[index] = i;
+                index++;
+            }
+        }
+        
+        return userStrategies;
+    }
+    
     function getStrategy(uint256 strategyId) external view returns (YieldStrategy memory) {
         return strategies[strategyId];
     }
