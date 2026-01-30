@@ -372,6 +372,22 @@ contract ContractRegistry {
         return (oldestName, oldestTime);
     }
     
+    function getNewestContract() external view returns (string memory name, uint256 deployedAt) {
+        require(contractNames.length > 0, "No contracts registered");
+        
+        uint256 newestTime = 0;
+        string memory newestName;
+        
+        for (uint256 i = 0; i < contractNames.length; i++) {
+            if (contracts[contractNames[i]].deployedAt > newestTime) {
+                newestTime = contracts[contractNames[i]].deployedAt;
+                newestName = contractNames[i];
+            }
+        }
+        
+        return (newestName, newestTime);
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
