@@ -10,13 +10,25 @@ contract VaultSnapshot {
     
     mapping(address => Snapshot[]) public userSnapshots;
     mapping(address => uint256) public lastSnapshotTime;
+    mapping(address => uint256) public maxSnapshots;
     uint256 public minSnapshotInterval = 1800; // 30 minutes
+    uint256 public defaultMaxSnapshots = 1000;
     
     event SnapshotTaken(address indexed user, uint256 balance, uint256 timestamp);
     
     function takeSnapshot(address user, uint256 balance) external {
         require(user != address(0), "Invalid user");
         require(block.timestamp >= lastSnapshotTime[user] + minSnapshotInterval, "Too frequent");
+        
+        uint256 userMaxSnapshots = maxSnapshots[user] == 0 ? defaultMaxSnapshots : maxSnapshots[user];
+        
+        if (userSnapshots[user].length >= userMaxSnapshots) {
+            // Remove oldest snapshot
+            for (uint256 i = 0; i < userSnapshots[user].length - 1; i++) {
+                userSnapshots[user][i] = userSnapshots[user][i + 1];
+            }
+            userSnapshots[user].pop();
+        }
         
         userSnapshots[user].push(Snapshot({
             timestamp: block.timestamp,
