@@ -50,6 +50,22 @@ contract ContractRegistry {
         return contracts[name].contractAddress;
     }
     
+    function updateContract(string memory name, address newAddress, string memory newVersion) external onlyOwner {
+        require(contracts[name].active, "Contract not found");
+        require(newAddress != address(0), "Invalid address");
+        
+        address oldAddress = contracts[name].contractAddress;
+        isRegistered[oldAddress] = false;
+        
+        contracts[name].contractAddress = newAddress;
+        contracts[name].version = newVersion;
+        contracts[name].deployedAt = block.timestamp;
+        
+        isRegistered[newAddress] = true;
+        
+        emit ContractUpdated(name, oldAddress, newAddress);
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
