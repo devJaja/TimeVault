@@ -19,6 +19,7 @@ contract VaultSnapshot {
     
     function takeSnapshot(address user, uint256 balance) external {
         require(user != address(0), "Invalid user");
+        require(balance > 0, "Balance must be positive");
         require(block.timestamp >= lastSnapshotTime[user] + minSnapshotInterval, "Too frequent");
         
         uint256 userMaxSnapshots = maxSnapshots[user] == 0 ? defaultMaxSnapshots : maxSnapshots[user];
