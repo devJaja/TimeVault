@@ -14,6 +14,7 @@ contract YieldManager {
     mapping(address => mapping(uint256 => uint256)) public userDeposits;
     mapping(address => mapping(uint256 => uint256)) public userDepositTime;
     mapping(address => uint256) public userRewards;
+    mapping(uint256 => uint256) public strategyMinDeposit;
     uint256 public strategyCount;
     address public owner;
     
@@ -54,6 +55,7 @@ contract YieldManager {
     function deposit(uint256 strategyId, uint256 amount) external payable {
         require(strategies[strategyId].active, "Strategy not active");
         require(amount > 0, "Amount must be positive");
+        require(amount >= strategyMinDeposit[strategyId], "Below minimum deposit");
         require(msg.value == amount, "Value mismatch");
         
         userDeposits[msg.sender][strategyId] += amount;
@@ -189,6 +191,11 @@ contract YieldManager {
         }
         
         return (bestStrategy, highestAPY);
+    }
+    
+    function setMinimumDeposit(uint256 strategyId, uint256 minDeposit) external onlyOwner {
+        require(strategyId < strategyCount, "Invalid strategy");
+        strategyMinDeposit[strategyId] = minDeposit;
     }
     
     function getStrategy(uint256 strategyId) external view returns (YieldStrategy memory) {
