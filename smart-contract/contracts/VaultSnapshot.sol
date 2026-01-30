@@ -59,6 +59,7 @@ contract VaultSnapshot {
         returns (Snapshot[] memory) 
     {
         require(startTime <= endTime, "Invalid time range");
+        require(endTime <= block.timestamp, "End time cannot be in future");
         
         Snapshot[] memory allSnapshots = userSnapshots[user];
         uint256 count = 0;
