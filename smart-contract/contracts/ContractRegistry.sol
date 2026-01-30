@@ -124,6 +124,17 @@ contract ContractRegistry {
         return contracts[name].active;
     }
     
+    function getContractCount() external view returns (uint256 total, uint256 active) {
+        total = contractNames.length;
+        active = 0;
+        
+        for (uint256 i = 0; i < contractNames.length; i++) {
+            if (contracts[contractNames[i]].active) {
+                active++;
+            }
+        }
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
