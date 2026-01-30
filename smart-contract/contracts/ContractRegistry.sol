@@ -75,6 +75,11 @@ contract ContractRegistry {
         emit ContractDeactivated(name, contracts[name].contractAddress);
     }
     
+    function getContractInfo(string memory name) external view returns (address, string memory, uint256, bool) {
+        ContractInfo memory info = contracts[name];
+        return (info.contractAddress, info.version, info.deployedAt, info.active);
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
