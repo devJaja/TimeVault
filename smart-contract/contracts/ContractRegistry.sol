@@ -20,6 +20,7 @@ contract ContractRegistry {
     event ContractUpdated(string indexed name, address indexed oldAddress, address indexed newAddress);
     event ContractDeactivated(string indexed name, address indexed contractAddress);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event CategoryUpdated(string indexed name, string oldCategory, string newCategory);
     
     modifier onlyOwner() {
         require(msg.sender == owner, "Not owner");
@@ -175,7 +176,9 @@ contract ContractRegistry {
     
     function setContractCategory(string memory name, string memory category) external onlyOwner {
         require(contracts[name].contractAddress != address(0), "Contract not found");
+        string memory oldCategory = contractCategories[name];
         contractCategories[name] = category;
+        emit CategoryUpdated(name, oldCategory, category);
     }
     
     function getContractCategory(string memory name) external view returns (string memory) {
