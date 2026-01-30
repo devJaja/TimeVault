@@ -73,6 +73,11 @@ contract YieldManager {
         return (deposit * apy) / 10000; // Simple APY calculation
     }
     
+    function deactivateStrategy(uint256 strategyId) external onlyOwner {
+        require(strategyId < strategyCount, "Invalid strategy");
+        strategies[strategyId].active = false;
+    }
+    
     function getStrategy(uint256 strategyId) external view returns (YieldStrategy memory) {
         return strategies[strategyId];
     }
