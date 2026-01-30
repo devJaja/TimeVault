@@ -120,6 +120,10 @@ contract ContractRegistry {
         return activeContracts;
     }
     
+    function isContractActive(string memory name) external view returns (bool) {
+        return contracts[name].active;
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
