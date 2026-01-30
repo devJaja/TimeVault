@@ -177,6 +177,20 @@ contract YieldManager {
         strategies[strategyId].active = true;
     }
     
+    function getHighestAPYStrategy() external view returns (uint256 strategyId, uint256 apy) {
+        uint256 highestAPY = 0;
+        uint256 bestStrategy = 0;
+        
+        for (uint256 i = 0; i < strategyCount; i++) {
+            if (strategies[i].active && strategies[i].apy > highestAPY) {
+                highestAPY = strategies[i].apy;
+                bestStrategy = i;
+            }
+        }
+        
+        return (bestStrategy, highestAPY);
+    }
+    
     function getStrategy(uint256 strategyId) external view returns (YieldStrategy memory) {
         return strategies[strategyId];
     }
