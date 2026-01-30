@@ -298,6 +298,23 @@ contract ContractRegistry {
         return isRegistered[contractAddress];
     }
     
+    function getRegistryStats() external view returns (
+        uint256 totalContracts,
+        uint256 activeContracts,
+        uint256 totalVersions
+    ) {
+        totalContracts = contractNames.length;
+        activeContracts = 0;
+        totalVersions = 0;
+        
+        for (uint256 i = 0; i < contractNames.length; i++) {
+            if (contracts[contractNames[i]].active) {
+                activeContracts++;
+            }
+            totalVersions += contractVersionHistory[contractNames[i]].length;
+        }
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
