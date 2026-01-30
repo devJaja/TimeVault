@@ -178,6 +178,10 @@ contract ContractRegistry {
         contractCategories[name] = category;
     }
     
+    function getContractCategory(string memory name) external view returns (string memory) {
+        return contractCategories[name];
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
