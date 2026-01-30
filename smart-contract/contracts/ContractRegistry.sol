@@ -292,6 +292,10 @@ contract ContractRegistry {
         return contracts[name].deployedAt;
     }
     
+    function isAddressRegistered(address contractAddress) external view returns (bool) {
+        return isRegistered[contractAddress];
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
