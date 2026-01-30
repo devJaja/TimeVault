@@ -90,6 +90,16 @@ contract YieldManager {
         strategies[strategyId].apy = newAPY;
     }
     
+    function claimRewards(uint256 strategyId) external {
+        uint256 rewards = this.calculateRewards(msg.sender, strategyId);
+        require(rewards > 0, "No rewards to claim");
+        
+        userRewards[msg.sender] += rewards;
+        userDepositTime[msg.sender][strategyId] = block.timestamp; // Reset timer
+        
+        emit RewardsClaimed(msg.sender, rewards);
+    }
+    
     function getStrategy(uint256 strategyId) external view returns (YieldStrategy memory) {
         return strategies[strategyId];
     }
