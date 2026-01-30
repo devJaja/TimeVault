@@ -78,6 +78,13 @@ contract YieldManager {
         strategies[strategyId].active = false;
     }
     
+    function updateStrategyAPY(uint256 strategyId, uint256 newAPY) external onlyOwner {
+        require(strategyId < strategyCount, "Invalid strategy");
+        require(newAPY <= 50000, "APY too high"); // Max 500%
+        
+        strategies[strategyId].apy = newAPY;
+    }
+    
     function getStrategy(uint256 strategyId) external view returns (YieldStrategy memory) {
         return strategies[strategyId];
     }
