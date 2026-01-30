@@ -72,7 +72,10 @@ contract YieldManager {
     function calculateRewards(address user, uint256 strategyId) external view returns (uint256) {
         uint256 deposit = userDeposits[user][strategyId];
         uint256 apy = strategies[strategyId].apy;
-        return (deposit * apy) / 10000; // Simple APY calculation
+        uint256 timeElapsed = block.timestamp - userDepositTime[user][strategyId];
+        
+        // Calculate rewards based on time elapsed (annual rate)
+        return (deposit * apy * timeElapsed) / (10000 * 365 days);
     }
     
     function deactivateStrategy(uint256 strategyId) external onlyOwner {
