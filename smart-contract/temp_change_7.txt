@@ -1,0 +1,2 @@
+Change 8: perf: optimize storage layout for gas efficiency
+Timestamp: 2026-01-30T19:42:31.795Z
