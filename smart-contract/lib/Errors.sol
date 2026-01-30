@@ -37,3 +37,18 @@ error SavingsChallenge__NoWinners();
 error SavingsChallenge__OnlyCreatorCanCancel();
 error SavingsChallenge__CannotCancelAfterDeadline();
 error SavingsChallenge__EtherTransferFailed();
+
+// --- Custom Errors for VaultFactory.sol ---
+error VaultFactory__NotOwner();
+error VaultFactory__EmptyName();
+error VaultFactory__InvalidUnlockTime();
+error VaultFactory__FeeTooHigh();
+error VaultFactory__ZeroAddress();
+
+// --- Custom Errors for TimeVault.sol ---
+error TimeVault__NotOwner();
+error TimeVault__ZeroAmount();
+error TimeVault__VaultLocked();
+error TimeVault__InsufficientBalance();
+error TimeVault__TransferFailed();
+error TimeVault__EmergencyNotEnabled();
