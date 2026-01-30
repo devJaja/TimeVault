@@ -11,6 +11,7 @@ contract ContractRegistry {
     
     mapping(string => ContractInfo) public contracts;
     mapping(address => bool) public isRegistered;
+    mapping(string => string[]) public contractVersionHistory;
     string[] public contractNames;
     address public owner;
     
@@ -41,6 +42,7 @@ contract ContractRegistry {
         
         isRegistered[contractAddress] = true;
         contractNames.push(name);
+        contractVersionHistory[name].push(version);
         
         emit ContractRegistered(name, contractAddress, version);
     }
@@ -62,6 +64,7 @@ contract ContractRegistry {
         contracts[name].deployedAt = block.timestamp;
         
         isRegistered[newAddress] = true;
+        contractVersionHistory[name].push(newVersion);
         
         emit ContractUpdated(name, oldAddress, newAddress);
     }
