@@ -147,6 +147,17 @@ contract YieldManager {
         return total;
     }
     
+    function emergencyWithdraw(uint256 strategyId) external {
+        uint256 amount = userDeposits[msg.sender][strategyId];
+        require(amount > 0, "No deposits");
+        
+        userDeposits[msg.sender][strategyId] = 0;
+        strategies[strategyId].totalDeposited -= amount;
+        
+        payable(msg.sender).transfer(amount);
+        emit Withdrawn(msg.sender, strategyId, amount);
+    }
+    
     function getStrategy(uint256 strategyId) external view returns (YieldStrategy memory) {
         return strategies[strategyId];
     }
