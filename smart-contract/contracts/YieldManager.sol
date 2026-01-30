@@ -100,6 +100,16 @@ contract YieldManager {
         emit RewardsClaimed(msg.sender, rewards);
     }
     
+    function getAllStrategies() external view returns (YieldStrategy[] memory) {
+        YieldStrategy[] memory allStrategies = new YieldStrategy[](strategyCount);
+        
+        for (uint256 i = 0; i < strategyCount; i++) {
+            allStrategies[i] = strategies[i];
+        }
+        
+        return allStrategies;
+    }
+    
     function getStrategy(uint256 strategyId) external view returns (YieldStrategy memory) {
         return strategies[strategyId];
     }
