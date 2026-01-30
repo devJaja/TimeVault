@@ -81,9 +81,10 @@ contract LeaderboardTracker {
     
     function getTopSavers(uint256 count) external view returns (Saver[] memory) {
         uint256 length = count > topSavers.length ? topSavers.length : count;
-        Saver[] memory result = new Saver[](length);
+        uint256 maxCount = length > 100 ? 100 : length; // Limit to 100 for gas efficiency
+        Saver[] memory result = new Saver[](maxCount);
         
-        for (uint256 i = 0; i < length; i++) {
+        for (uint256 i = 0; i < maxCount; i++) {
             result[i] = topSavers[i];
         }
         
