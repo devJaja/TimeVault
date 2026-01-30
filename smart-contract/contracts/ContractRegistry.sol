@@ -283,6 +283,10 @@ contract ContractRegistry {
         emit OwnershipTransferred(previousOwner, address(0));
     }
     
+    function getContractVersion(string memory name) external view returns (string memory) {
+        return contracts[name].version;
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
