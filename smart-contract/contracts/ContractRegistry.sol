@@ -32,6 +32,7 @@ contract ContractRegistry {
     function registerContract(string memory name, address contractAddress, string memory version) external onlyOwner {
         require(contractAddress != address(0), "Invalid address");
         require(bytes(name).length > 0, "Name required");
+        require(bytes(name).length <= 32, "Name too long");
         require(!contracts[name].active, "Contract already registered");
         
         contracts[name] = ContractInfo({
