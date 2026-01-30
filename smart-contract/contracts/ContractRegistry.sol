@@ -35,6 +35,8 @@ contract ContractRegistry {
         require(contractAddress != address(0), "Invalid address");
         require(bytes(name).length > 0, "Name required");
         require(bytes(name).length <= 32, "Name too long");
+        require(bytes(version).length > 0, "Version required");
+        require(bytes(version).length <= 16, "Version too long");
         require(!contracts[name].active, "Contract already registered");
         
         contracts[name] = ContractInfo({
