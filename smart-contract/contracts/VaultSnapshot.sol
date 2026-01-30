@@ -15,6 +15,7 @@ contract VaultSnapshot {
     uint256 public defaultMaxSnapshots = 1000;
     
     event SnapshotTaken(address indexed user, uint256 balance, uint256 timestamp);
+    event SnapshotLimitUpdated(address indexed user, uint256 newLimit);
     
     function takeSnapshot(address user, uint256 balance) external {
         require(user != address(0), "Invalid user");
@@ -82,6 +83,7 @@ contract VaultSnapshot {
     function setMaxSnapshots(address user, uint256 max) external {
         require(max > 0 && max <= 10000, "Invalid max snapshots");
         maxSnapshots[user] = max;
+        emit SnapshotLimitUpdated(user, max);
     }
     
     function getLatestSnapshot(address user) external view returns (uint256, uint256, uint256) {
