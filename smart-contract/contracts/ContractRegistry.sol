@@ -389,6 +389,10 @@ contract ContractRegistry {
         return (newestName, newestTime);
     }
     
+    function getContractUpgradeCount(string memory name) external view returns (uint256) {
+        return contractVersionHistory[name].length;
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
