@@ -220,6 +220,13 @@ contract YieldManager {
         return userStrategies;
     }
     
+    function transferOwnership(address newOwner) external onlyOwner {
+        require(newOwner != address(0), "Invalid owner");
+        require(newOwner != owner, "Same owner");
+        
+        owner = newOwner;
+    }
+    
     function getStrategy(uint256 strategyId) external view returns (YieldStrategy memory) {
         return strategies[strategyId];
     }
