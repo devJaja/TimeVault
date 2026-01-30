@@ -29,6 +29,9 @@ contract LeaderboardTracker {
     }
     
     function updateSavings(address user, uint256 amount) external {
+        require(user != address(0), "Invalid user address");
+        require(amount > 0, "Amount must be positive");
+        
         userSavings[user] += amount;
         _updateLeaderboard(user);
         _checkAchievements(user);
