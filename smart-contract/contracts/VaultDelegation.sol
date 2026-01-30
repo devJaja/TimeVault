@@ -14,6 +14,7 @@ contract VaultDelegation {
     uint256 constant WITHDRAW = 2;
     uint256 constant TRANSFER = 4;
     uint256 constant ADMIN = 8;
+    uint256 constant VIEW = 16;
     
     mapping(address => mapping(address => Delegation)) public delegations;
     mapping(address => address[]) public userDelegates;
@@ -125,5 +126,9 @@ contract VaultDelegation {
     
     function canAdmin(address owner, address delegate) external view returns (bool) {
         return this.hasPermission(owner, delegate, ADMIN);
+    }
+    
+    function canView(address owner, address delegate) external view returns (bool) {
+        return this.hasPermission(owner, delegate, VIEW);
     }
 }

@@ -25,9 +25,13 @@ contract LeaderboardTracker {
         achievements.push(Achievement("First Save", 1 ether, true));
         achievements.push(Achievement("Big Saver", 10 ether, true));
         achievements.push(Achievement("Whale", 100 ether, true));
+        achievements.push(Achievement("Diamond Hands", 1000 ether, true));
     }
     
     function updateSavings(address user, uint256 amount) external {
+        require(user != address(0), "Invalid user address");
+        require(amount > 0, "Amount must be positive");
+        
         userSavings[user] += amount;
         _updateLeaderboard(user);
         _checkAchievements(user);
@@ -80,9 +84,10 @@ contract LeaderboardTracker {
     
     function getTopSavers(uint256 count) external view returns (Saver[] memory) {
         uint256 length = count > topSavers.length ? topSavers.length : count;
-        Saver[] memory result = new Saver[](length);
+        uint256 maxCount = length > 100 ? 100 : length; // Limit to 100 for gas efficiency
+        Saver[] memory result = new Saver[](maxCount);
         
-        for (uint256 i = 0; i < length; i++) {
+        for (uint256 i = 0; i < maxCount; i++) {
             result[i] = topSavers[i];
         }
         
