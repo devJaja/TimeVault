@@ -66,6 +66,7 @@ contract ContractRegistry {
         require(newAddress != address(0), "Invalid address");
         require(bytes(newVersion).length > 0, "Version required");
         require(bytes(newVersion).length <= 16, "Version too long");
+        require(newAddress != contracts[name].contractAddress, "Same address");
         
         address oldAddress = contracts[name].contractAddress;
         isRegistered[oldAddress] = false;
