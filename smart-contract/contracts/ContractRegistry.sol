@@ -12,6 +12,7 @@ contract ContractRegistry {
     mapping(string => ContractInfo) public contracts;
     mapping(address => bool) public isRegistered;
     mapping(string => string[]) public contractVersionHistory;
+    mapping(string => string) public contractCategories;
     string[] public contractNames;
     address public owner;
     
@@ -29,7 +30,7 @@ contract ContractRegistry {
         owner = msg.sender;
     }
     
-    function registerContract(string memory name, address contractAddress, string memory version) external onlyOwner {
+    function registerContract(string memory name, address contractAddress, string memory version, string memory category) external onlyOwner {
         require(contractAddress != address(0), "Invalid address");
         require(bytes(name).length > 0, "Name required");
         require(bytes(name).length <= 32, "Name too long");
@@ -45,6 +46,7 @@ contract ContractRegistry {
         isRegistered[contractAddress] = true;
         contractNames.push(name);
         contractVersionHistory[name].push(version);
+        contractCategories[name] = category;
         
         emit ContractRegistered(name, contractAddress, version);
     }
