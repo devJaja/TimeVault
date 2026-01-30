@@ -122,6 +122,25 @@ contract VaultSnapshot {
         return int256((currentBalance * 10000) / oldBalance) - 10000; // Return as basis points
     }
     
+    function getAverageBalance(address user, uint256 days) external view returns (uint256) {
+        require(days > 0, "Days must be positive");
+        Snapshot[] memory snapshots = userSnapshots[user];
+        require(snapshots.length > 0, "No snapshots available");
+        
+        uint256 targetTime = block.timestamp - (days * 86400);
+        uint256 sum = 0;
+        uint256 count = 0;
+        
+        for (uint256 i = 0; i < snapshots.length; i++) {
+            if (snapshots[i].timestamp >= targetTime) {
+                sum += snapshots[i].balance;
+                count++;
+            }
+        }
+        
+        return count > 0 ? sum / count : 0;
+    }
+    
     function clearSnapshots(address user) external {
         require(user != address(0), "Invalid user");
         delete userSnapshots[user];
