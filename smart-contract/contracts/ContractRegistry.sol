@@ -344,6 +344,18 @@ contract ContractRegistry {
         return "";
     }
     
+    function bulkDeactivateContracts(string[] memory names) external onlyOwner {
+        require(names.length <= 20, "Too many contracts");
+        
+        for (uint256 i = 0; i < names.length; i++) {
+            if (contracts[names[i]].active) {
+                contracts[names[i]].active = false;
+                isRegistered[contracts[names[i]].contractAddress] = false;
+                emit ContractDeactivated(names[i], contracts[names[i]].contractAddress);
+            }
+        }
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
