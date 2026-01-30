@@ -2,6 +2,7 @@
 pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "../lib/Errors.sol";
 
 contract SavingsChallenge is Ownable {
 
@@ -58,11 +59,11 @@ contract SavingsChallenge is Ownable {
         uint256 _participationFee,
         uint256 _duration
     ) public {
-        require(bytes(_name).length > 0, "SavingsChallenge: Name cannot be empty");
-        require(_goalAmount > 0, "SavingsChallenge: Goal amount must be greater than zero");
-        require(_participationFee > 0, "SavingsChallenge: Participation fee must be greater than zero");
-        require(_duration > 0, "SavingsChallenge: Duration must be greater than zero");
-        require(block.timestamp + _duration > block.timestamp, "SavingsChallenge: Deadline overflow"); // Check for overflow
+        if (bytes(_name).length == 0) revert SavingsChallenge__EmptyName();
+        if (_goalAmount == 0) revert SavingsChallenge__ZeroGoalAmount();
+        if (_participationFee == 0) revert SavingsChallenge__ZeroParticipationFee();
+        if (_duration == 0) revert SavingsChallenge__ZeroDuration();
+        if (block.timestamp + _duration <= block.timestamp) revert SavingsChallenge__DeadlineOverflow(); // Check for overflow
 
         uint256 challengeId = nextChallengeId++;
         challenges[challengeId].creator = msg.sender;
@@ -81,11 +82,11 @@ contract SavingsChallenge is Ownable {
      */
     function joinChallenge(uint256 _challengeId) public payable {
         Challenge storage challenge = challenges[_challengeId];
-        require(challenge.creator != address(0), "SavingsChallenge: Challenge does not exist");
-        require(challenge.status == ChallengeStatus.Open, "SavingsChallenge: Challenge is not open");
-        require(block.timestamp < challenge.deadline, "SavingsChallenge: Challenge joining deadline has passed");
-        require(!challenge.participants[msg.sender].joined, "SavingsChallenge: Already joined this challenge");
-        require(msg.value == challenge.participationFee, "SavingsChallenge: Incorrect participation fee");
+        if (challenge.creator == address(0)) revert SavingsChallenge__ChallengeDoesNotExist();
+        if (challenge.status != ChallengeStatus.Open) revert SavingsChallenge__ChallengeNotOpen();
+        if (block.timestamp >= challenge.deadline) revert SavingsChallenge__JoiningDeadlinePassed();
+        if (challenge.participants[msg.sender].joined) revert SavingsChallenge__AlreadyJoinedChallenge();
+        if (msg.value != challenge.participationFee) revert SavingsChallenge__IncorrectParticipationFee();
 
         challenge.participants[msg.sender].joined = true;
         challenge.participantAddresses.push(msg.sender);
@@ -100,11 +101,11 @@ contract SavingsChallenge is Ownable {
      */
     function contributeToChallenge(uint256 _challengeId) public payable {
         Challenge storage challenge = challenges[_challengeId];
-        require(challenge.creator != address(0), "SavingsChallenge: Challenge does not exist");
-        require(challenge.status == ChallengeStatus.Open, "SavingsChallenge: Challenge is not open");
-        require(block.timestamp < challenge.deadline, "SavingsChallenge: Challenge contribution deadline has passed");
-        require(challenge.participants[msg.sender].joined, "SavingsChallenge: Not a participant in this challenge");
-        require(msg.value > 0, "SavingsChallenge: Contribution amount must be greater than zero");
+        if (challenge.creator == address(0)) revert SavingsChallenge__ChallengeDoesNotExist();
+        if (challenge.status != ChallengeStatus.Open) revert SavingsChallenge__ChallengeNotOpen();
+        if (block.timestamp >= challenge.deadline) revert SavingsChallenge__ContributionDeadlinePassed();
+        if (!challenge.participants[msg.sender].joined) revert SavingsChallenge__NotParticipant();
+        if (msg.value == 0) revert SavingsChallenge__ZeroContributionAmount();
 
         Participant storage participant = challenge.participants[msg.sender];
         participant.contributedAmount += msg.value;
@@ -123,62 +124,60 @@ contract SavingsChallenge is Ownable {
      *      Anyone can call this function after the deadline.
      * @param _challengeId The ID of the challenge to resolve.
      */
-    function resolveChallenge(uint256 _challengeId) public {
-        Challenge storage challenge = challenges[_challengeId];
-        require(challenge.creator != address(0), "SavingsChallenge: Challenge does not exist");
-        require(challenge.status == ChallengeStatus.Open, "SavingsChallenge: Challenge is not open");
-        require(block.timestamp >= challenge.deadline, "SavingsChallenge: Challenge has not ended yet");
-        
-        challenge.status = ChallengeStatus.Ended; // Intermediate status before resolved
-
-        uint256 totalForfeitedContributions = 0;
-        for (uint i = 0; i < challenge.participantAddresses.length; i++) {
-            address participantAddress = challenge.participantAddresses[i];
-            Participant storage participant = challenge.participants[participantAddress];
-
-            if (participant.joined && !participant.hasMetGoal) {
-                // Participant failed to meet goal, their contributions are forfeited to the reward pool
-                totalForfeitedContributions += participant.contributedAmount;
-            }
-        }
-        challenge.rewardPool += totalForfeitedContributions;
-
-        if (challenge.winnerCount == 0) {
-            // No winners, return reward pool to owner
-            (bool success, ) = owner().call{value: challenge.rewardPool}("");
-            require(success, "SavingsChallenge: Failed to send reward pool to owner");
-            challenge.rewardPool = 0; // Clear pool after transfer
-        }
-        
-        challenge.status = ChallengeStatus.Resolved;
-        emit ChallengeResolved(_challengeId, challenge.rewardPool, challenge.winnerCount);
-    }
-
-    /**
+                    function resolveChallenge(uint256 _challengeId) public {
+                        Challenge storage challenge = challenges[_challengeId];
+                        if (challenge.creator == address(0)) revert SavingsChallenge__ChallengeDoesNotExist();
+                        if (challenge.status != ChallengeStatus.Open) revert SavingsChallenge__ChallengeNotOpen();
+                        if (block.timestamp < challenge.deadline) revert SavingsChallenge__ChallengeNotEnded();
+                        
+                        challenge.status = ChallengeStatus.Ended; // Intermediate status before resolved
+                
+                        uint256 totalForfeitedContributions = 0;
+                        for (uint i = 0; i < challenge.participantAddresses.length; i++) {
+                            address participantAddress = challenge.participantAddresses[i];
+                            Participant storage participant = challenge.participants[participantAddress];
+                
+                            if (participant.joined && !participant.hasMetGoal) {
+                                // Participant failed to meet goal, their contributions are forfeited to the reward pool
+                                totalForfeitedContributions += participant.contributedAmount;
+                            }
+                        }
+                        challenge.rewardPool += totalForfeitedContributions;
+                
+                        if (challenge.winnerCount == 0) {
+                            // No winners, return reward pool to owner
+                            (bool success, ) = owner().call{value: challenge.rewardPool}("");
+                            if (!success) revert SavingsChallenge__EtherTransferFailed();
+                            challenge.rewardPool = 0; // Clear pool after transfer
+                        }
+                        
+                        challenge.status = ChallengeStatus.Resolved;
+                        emit ChallengeResolved(_challengeId, challenge.rewardPool, challenge.winnerCount);
+                    }
+                    
+                            /**
      * @dev Allows a winner to claim their reward after the challenge has been resolved.
      * @param _challengeId The ID of the challenge.
      */
-    function claimReward(uint256 _challengeId) public {
-        Challenge storage challenge = challenges[_challengeId];
-        require(challenge.creator != address(0), "SavingsChallenge: Challenge does not exist");
-        require(challenge.status == ChallengeStatus.Resolved, "SavingsChallenge: Challenge is not resolved");
-
-        Participant storage participant = challenge.participants[msg.sender];
-        require(participant.joined, "SavingsChallenge: Not a participant in this challenge");
-        require(participant.hasMetGoal, "SavingsChallenge: Participant did not meet the goal");
-        require(!participant.hasClaimedReward, "SavingsChallenge: Reward already claimed");
-        require(challenge.winnerCount > 0, "SavingsChallenge: No winners in this challenge");
-
-        uint256 rewardAmount = challenge.rewardPool / challenge.winnerCount;
-        participant.hasClaimedReward = true;
-
-        (bool success, ) = msg.sender.call{value: rewardAmount}("");
-        require(success, "SavingsChallenge: Failed to send reward");
-
-        emit RewardClaimed(_challengeId, msg.sender, rewardAmount);
-    }
-
-    /**
+                            function claimReward(uint256 _challengeId) public {
+                                Challenge storage challenge = challenges[_challengeId];
+                                if (challenge.creator == address(0)) revert SavingsChallenge__ChallengeDoesNotExist();
+                                if (challenge.status != ChallengeStatus.Resolved) revert SavingsChallenge__ChallengeNotResolved();
+                        
+                                Participant storage participant = challenge.participants[msg.sender];
+                                if (!participant.joined) revert SavingsChallenge__NotParticipant();
+                                if (!participant.hasMetGoal) revert SavingsChallenge__ParticipantDidNotMeetGoal();
+                                if (participant.hasClaimedReward) revert SavingsChallenge__RewardAlreadyClaimed();
+                                if (challenge.winnerCount == 0) revert SavingsChallenge__NoWinners();
+                        
+                                uint256 rewardAmount = challenge.rewardPool / challenge.winnerCount;
+                                participant.hasClaimedReward = true;
+                        
+                                (bool success, ) = msg.sender.call{value: rewardAmount}("");
+                                require(success, "SavingsChallenge: Failed to send reward");
+                        
+                                emit RewardClaimed(_challengeId, msg.sender, rewardAmount);
+                            }                                /**
      * @dev Allows the challenge creator to cancel an open challenge before its deadline.
      *      Participation fees are refunded. Contributions are refunded.
      * @param _challengeId The ID of the challenge to cancel.
