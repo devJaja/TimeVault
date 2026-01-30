@@ -252,6 +252,17 @@ contract ContractRegistry {
         return timeContracts;
     }
     
+    function emergencyPause() external onlyOwner {
+        // Deactivate all contracts in emergency
+        for (uint256 i = 0; i < contractNames.length; i++) {
+            if (contracts[contractNames[i]].active) {
+                contracts[contractNames[i]].active = false;
+                isRegistered[contracts[contractNames[i]].contractAddress] = false;
+                emit ContractDeactivated(contractNames[i], contracts[contractNames[i]].contractAddress);
+            }
+        }
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
