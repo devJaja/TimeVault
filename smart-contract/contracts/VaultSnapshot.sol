@@ -10,7 +10,7 @@ contract VaultSnapshot {
     
     mapping(address => Snapshot[]) public userSnapshots;
     mapping(address => uint256) public lastSnapshotTime;
-    uint256 public minSnapshotInterval = 3600; // 1 hour
+    uint256 public minSnapshotInterval = 1800; // 30 minutes
     
     event SnapshotTaken(address indexed user, uint256 balance, uint256 timestamp);
     
