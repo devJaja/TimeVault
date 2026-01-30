@@ -35,6 +35,7 @@ contract ContractRegistry {
         require(contractAddress != address(0), "Invalid address");
         require(bytes(name).length > 0, "Name required");
         require(bytes(name).length <= 32, "Name too long");
+        require(validateContractName(name), "Invalid name format");
         require(bytes(version).length > 0, "Version required");
         require(bytes(version).length <= 16, "Version too long");
         require(bytes(category).length <= 16, "Category too long");
@@ -313,6 +314,22 @@ contract ContractRegistry {
             }
             totalVersions += contractVersionHistory[contractNames[i]].length;
         }
+    }
+    
+    function validateContractName(string memory name) public pure returns (bool) {
+        bytes memory nameBytes = bytes(name);
+        if (nameBytes.length == 0 || nameBytes.length > 32) return false;
+        
+        for (uint256 i = 0; i < nameBytes.length; i++) {
+            bytes1 char = nameBytes[i];
+            if (!(char >= 0x30 && char <= 0x39) && // 0-9
+                !(char >= 0x41 && char <= 0x5A) && // A-Z
+                !(char >= 0x61 && char <= 0x7A) && // a-z
+                char != 0x5F) { // _
+                return false;
+            }
+        }
+        return true;
     }
     
     function getAllContracts() external view returns (string[] memory) {
