@@ -269,6 +269,10 @@ contract ContractRegistry {
         return versions[versions.length - 1];
     }
     
+    function hasContract(string memory name) external view returns (bool) {
+        return contracts[name].contractAddress != address(0);
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
