@@ -149,6 +149,30 @@ contract ContractRegistry {
         emit ContractRegistered(name, contracts[name].contractAddress, contracts[name].version);
     }
     
+    function getContractsByCategory(string memory category) external view returns (string[] memory) {
+        uint256 count = 0;
+        
+        for (uint256 i = 0; i < contractNames.length; i++) {
+            if (keccak256(bytes(contractCategories[contractNames[i]])) == keccak256(bytes(category)) && 
+                contracts[contractNames[i]].active) {
+                count++;
+            }
+        }
+        
+        string[] memory categoryContracts = new string[](count);
+        uint256 index = 0;
+        
+        for (uint256 i = 0; i < contractNames.length; i++) {
+            if (keccak256(bytes(contractCategories[contractNames[i]])) == keccak256(bytes(category)) && 
+                contracts[contractNames[i]].active) {
+                categoryContracts[index] = contractNames[i];
+                index++;
+            }
+        }
+        
+        return categoryContracts;
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
