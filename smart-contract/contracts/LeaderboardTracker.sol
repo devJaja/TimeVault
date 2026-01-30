@@ -25,6 +25,7 @@ contract LeaderboardTracker {
         achievements.push(Achievement("First Save", 1 ether, true));
         achievements.push(Achievement("Big Saver", 10 ether, true));
         achievements.push(Achievement("Whale", 100 ether, true));
+        achievements.push(Achievement("Diamond Hands", 1000 ether, true));
     }
     
     function updateSavings(address user, uint256 amount) external {
