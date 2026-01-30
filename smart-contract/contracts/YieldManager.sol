@@ -36,6 +36,8 @@ contract YieldManager {
     function addStrategy(address strategyAddress, string memory name, uint256 apy) external onlyOwner {
         require(strategyAddress != address(0), "Invalid address");
         require(bytes(name).length > 0, "Name required");
+        require(bytes(name).length <= 32, "Name too long");
+        require(apy <= 50000, "APY too high");
         
         strategies[strategyCount] = YieldStrategy({
             strategyAddress: strategyAddress,
