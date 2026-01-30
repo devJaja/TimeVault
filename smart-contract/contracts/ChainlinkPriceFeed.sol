@@ -15,7 +15,7 @@ interface AggregatorV3Interface {
 contract ChainlinkPriceFeed {
     mapping(string => AggregatorV3Interface) public priceFeeds;
     mapping(string => uint256) public lastUpdated;
-    uint256 public constant STALE_THRESHOLD = 3600; // 1 hour
+    uint256 public constant STALE_THRESHOLD = 1800; // 30 minutes
     
     event PriceFeedAdded(string indexed symbol, address indexed feed);
     event PriceUpdated(string indexed symbol, int256 price, uint256 timestamp);
