@@ -121,6 +121,12 @@ contract VaultSnapshot {
         return int256((currentBalance * 10000) / oldBalance) - 10000; // Return as basis points
     }
     
+    function clearSnapshots(address user) external {
+        require(user != address(0), "Invalid user");
+        delete userSnapshots[user];
+        lastSnapshotTime[user] = 0;
+    }
+    
     function getLatestSnapshot(address user) external view returns (uint256, uint256, uint256) {
         require(userSnapshots[user].length > 0, "No snapshots");
         Snapshot memory snapshot = userSnapshots[user][userSnapshots[user].length - 1];
