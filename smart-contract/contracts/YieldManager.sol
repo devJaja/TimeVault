@@ -18,6 +18,8 @@ contract YieldManager {
     address public owner;
     
     event StrategyAdded(uint256 indexed strategyId, string name, uint256 apy);
+    event StrategyDeactivated(uint256 indexed strategyId);
+    event APYUpdated(uint256 indexed strategyId, uint256 oldAPY, uint256 newAPY);
     event Deposited(address indexed user, uint256 indexed strategyId, uint256 amount);
     event Withdrawn(address indexed user, uint256 indexed strategyId, uint256 amount);
     event RewardsClaimed(address indexed user, uint256 amount);
@@ -81,13 +83,16 @@ contract YieldManager {
     function deactivateStrategy(uint256 strategyId) external onlyOwner {
         require(strategyId < strategyCount, "Invalid strategy");
         strategies[strategyId].active = false;
+        emit StrategyDeactivated(strategyId);
     }
     
     function updateStrategyAPY(uint256 strategyId, uint256 newAPY) external onlyOwner {
         require(strategyId < strategyCount, "Invalid strategy");
         require(newAPY <= 50000, "APY too high"); // Max 500%
         
+        uint256 oldAPY = strategies[strategyId].apy;
         strategies[strategyId].apy = newAPY;
+        emit APYUpdated(strategyId, oldAPY, newAPY);
     }
     
     function claimRewards(uint256 strategyId) external {
