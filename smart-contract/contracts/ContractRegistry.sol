@@ -182,6 +182,22 @@ contract ContractRegistry {
         return contractCategories[name];
     }
     
+    function batchRegisterContracts(
+        string[] memory names,
+        address[] memory addresses,
+        string[] memory versions,
+        string[] memory categories
+    ) external onlyOwner {
+        require(names.length == addresses.length, "Array length mismatch");
+        require(names.length == versions.length, "Array length mismatch");
+        require(names.length == categories.length, "Array length mismatch");
+        require(names.length <= 10, "Too many contracts");
+        
+        for (uint256 i = 0; i < names.length; i++) {
+            this.registerContract(names[i], addresses[i], versions[i], categories[i]);
+        }
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
