@@ -158,6 +158,16 @@ contract YieldManager {
         emit Withdrawn(msg.sender, strategyId, amount);
     }
     
+    function getTotalValueLocked() external view returns (uint256) {
+        uint256 total = 0;
+        
+        for (uint256 i = 0; i < strategyCount; i++) {
+            total += strategies[i].totalDeposited;
+        }
+        
+        return total;
+    }
+    
     function getStrategy(uint256 strategyId) external view returns (YieldStrategy memory) {
         return strategies[strategyId];
     }
