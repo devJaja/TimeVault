@@ -170,6 +170,13 @@ contract YieldManager {
         return total;
     }
     
+    function reactivateStrategy(uint256 strategyId) external onlyOwner {
+        require(strategyId < strategyCount, "Invalid strategy");
+        require(!strategies[strategyId].active, "Strategy already active");
+        
+        strategies[strategyId].active = true;
+    }
+    
     function getStrategy(uint256 strategyId) external view returns (YieldStrategy memory) {
         return strategies[strategyId];
     }
