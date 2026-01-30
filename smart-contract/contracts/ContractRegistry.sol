@@ -18,6 +18,7 @@ contract ContractRegistry {
     event ContractRegistered(string indexed name, address indexed contractAddress, string version);
     event ContractUpdated(string indexed name, address indexed oldAddress, address indexed newAddress);
     event ContractDeactivated(string indexed name, address indexed contractAddress);
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     
     modifier onlyOwner() {
         require(msg.sender == owner, "Not owner");
@@ -85,6 +86,16 @@ contract ContractRegistry {
     
     function getVersionHistory(string memory name) external view returns (string[] memory) {
         return contractVersionHistory[name];
+    }
+    
+    function transferOwnership(address newOwner) external onlyOwner {
+        require(newOwner != address(0), "Invalid owner");
+        require(newOwner != owner, "Same owner");
+        
+        address previousOwner = owner;
+        owner = newOwner;
+        
+        emit OwnershipTransferred(previousOwner, newOwner);
     }
     
     function getAllContracts() external view returns (string[] memory) {
