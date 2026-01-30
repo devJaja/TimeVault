@@ -129,6 +129,10 @@ contract MultiSigVault {
         emit TransactionRevoked(txId, msg.sender);
     }
     
+    function getBalance() external view returns (uint256) {
+        return address(this).balance;
+    }
+    
     function getOwners() external view returns (address[] memory) {
         return owners;
     }
