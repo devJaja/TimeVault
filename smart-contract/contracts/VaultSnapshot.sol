@@ -38,6 +38,35 @@ contract VaultSnapshot {
         return userSnapshots[user].length;
     }
     
+    function getSnapshotsByTimeRange(address user, uint256 startTime, uint256 endTime) 
+        external 
+        view 
+        returns (Snapshot[] memory) 
+    {
+        require(startTime <= endTime, "Invalid time range");
+        
+        Snapshot[] memory allSnapshots = userSnapshots[user];
+        uint256 count = 0;
+        
+        for (uint256 i = 0; i < allSnapshots.length; i++) {
+            if (allSnapshots[i].timestamp >= startTime && allSnapshots[i].timestamp <= endTime) {
+                count++;
+            }
+        }
+        
+        Snapshot[] memory result = new Snapshot[](count);
+        uint256 index = 0;
+        
+        for (uint256 i = 0; i < allSnapshots.length; i++) {
+            if (allSnapshots[i].timestamp >= startTime && allSnapshots[i].timestamp <= endTime) {
+                result[index] = allSnapshots[i];
+                index++;
+            }
+        }
+        
+        return result;
+    }
+    
     function getLatestSnapshot(address user) external view returns (uint256, uint256, uint256) {
         require(userSnapshots[user].length > 0, "No snapshots");
         Snapshot memory snapshot = userSnapshots[user][userSnapshots[user].length - 1];
