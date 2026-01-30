@@ -25,19 +25,33 @@ contract VaultSnapshot {
         
         uint256 userMaxSnapshots = maxSnapshots[user] == 0 ? defaultMaxSnapshots : maxSnapshots[user];
         
+        // Optimize gas by avoiding array shifts for large arrays
         if (userSnapshots[user].length >= userMaxSnapshots) {
-            // Remove oldest snapshot
-            for (uint256 i = 0; i < userSnapshots[user].length - 1; i++) {
-                userSnapshots[user][i] = userSnapshots[user][i + 1];
+            if (userMaxSnapshots > 100) {
+                // For large arrays, just replace oldest
+                userSnapshots[user][0] = Snapshot({
+                    timestamp: block.timestamp,
+                    balance: balance,
+                    blockNumber: block.number
+                });
+            } else {
+                // For small arrays, shift elements
+                for (uint256 i = 0; i < userSnapshots[user].length - 1; i++) {
+                    userSnapshots[user][i] = userSnapshots[user][i + 1];
+                }
+                userSnapshots[user][userSnapshots[user].length - 1] = Snapshot({
+                    timestamp: block.timestamp,
+                    balance: balance,
+                    blockNumber: block.number
+                });
             }
-            userSnapshots[user].pop();
+        } else {
+            userSnapshots[user].push(Snapshot({
+                timestamp: block.timestamp,
+                balance: balance,
+                blockNumber: block.number
+            }));
         }
-        
-        userSnapshots[user].push(Snapshot({
-            timestamp: block.timestamp,
-            balance: balance,
-            blockNumber: block.number
-        }));
         
         lastSnapshotTime[user] = block.timestamp;
         emit SnapshotTaken(user, balance, block.timestamp);
