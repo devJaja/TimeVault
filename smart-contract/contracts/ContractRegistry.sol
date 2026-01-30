@@ -136,6 +136,17 @@ contract ContractRegistry {
         }
     }
     
+    function reactivateContract(string memory name) external onlyOwner {
+        require(bytes(name).length > 0, "Name required");
+        require(contracts[name].contractAddress != address(0), "Contract never registered");
+        require(!contracts[name].active, "Contract already active");
+        
+        contracts[name].active = true;
+        isRegistered[contracts[name].contractAddress] = true;
+        
+        emit ContractRegistered(name, contracts[name].contractAddress, contracts[name].version);
+    }
+    
     function getAllContracts() external view returns (string[] memory) {
         return contractNames;
     }
