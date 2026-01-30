@@ -12,7 +12,7 @@ contract VaultSnapshot {
     mapping(address => uint256) public lastSnapshotTime;
     mapping(address => uint256) public maxSnapshots;
     uint256 public minSnapshotInterval = 1800; // 30 minutes
-    uint256 public defaultMaxSnapshots = 1000;
+    uint256 public defaultMaxSnapshots = 500;
     
     event SnapshotTaken(address indexed user, uint256 balance, uint256 timestamp);
     event SnapshotLimitUpdated(address indexed user, uint256 newLimit);
