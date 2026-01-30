@@ -107,6 +107,20 @@ contract VaultSnapshot {
         return snapshots[snapshots.length - 1].balance;
     }
     
+    function getGrowthRate(address user, uint256 days) external view returns (int256) {
+        require(days > 0, "Days must be positive");
+        Snapshot[] memory snapshots = userSnapshots[user];
+        require(snapshots.length >= 2, "Need at least 2 snapshots");
+        
+        uint256 targetTime = block.timestamp - (days * 86400);
+        uint256 oldBalance = this.getBalanceAtTime(user, targetTime);
+        uint256 currentBalance = snapshots[snapshots.length - 1].balance;
+        
+        if (oldBalance == 0) return 0;
+        
+        return int256((currentBalance * 10000) / oldBalance) - 10000; // Return as basis points
+    }
+    
     function getLatestSnapshot(address user) external view returns (uint256, uint256, uint256) {
         require(userSnapshots[user].length > 0, "No snapshots");
         Snapshot memory snapshot = userSnapshots[user][userSnapshots[user].length - 1];
