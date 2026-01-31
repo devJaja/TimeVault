@@ -1,0 +1,15 @@
+{
+  "network": "base-mainnet",
+  "chainId": 8453,
+  "timestamp": "2026-01-31T05:01:02.441Z",
+  "contracts": {
+    "VaultFactory": {
+      "address": "0xdf96b793277c6c30194381335f358f32162c8522",
+      "transactionHash": "0xe669ccdcdf2ac5f8fd19e3c5277d5cc2dbcb355d76f18cacf7b3bd567de48289"
+    },
+    "TimeVault": {
+      "address": "0x3cb2b5799c2d8c799594dd440ef9c5bc352ff504",
+      "transactionHash": "0x3cf7356c80be728773c5f89693befb0818f77d6394ff6194150419f46da2f0f4"
+    }
+  }
+}

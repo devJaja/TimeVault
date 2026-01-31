@@ -52,3 +52,23 @@ error TimeVault__VaultLocked();
 error TimeVault__InsufficientBalance();
 error TimeVault__TransferFailed();
 error TimeVault__EmergencyNotEnabled();
+
+// --- Custom Errors for New Contracts ---
+error TimeVault__UserNotRegistered();
+error TimeVault__UserAlreadyRegistered();
+error TimeVault__UsernameExists();
+error TimeVault__InvalidState();
+error TimeVault__InsufficientFunds();
+error TimeVault__ExceedsCoverage();
+error TimeVault__AlreadyApproved();
+error TimeVault__VotingEnded();
+error TimeVault__AlreadyVoted();
+error TimeVault__VotingActive();
+error TimeVault__AlreadyExecuted();
+error TimeVault__ProposalRejected();
+error TimeVault__ReferrerAlreadySet();
+error TimeVault__SelfReferral();
+error TimeVault__InvalidLockPeriod();
+error TimeVault__AlreadyWithdrawn();
+error TimeVault__StakeLocked();
+error TimeVault__NotAuthorized();
