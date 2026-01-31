@@ -1,2 +1,0 @@
-Change 20: feat: implement vault pause/unpause functionality
-Timestamp: 2026-01-30T19:42:32.186Z

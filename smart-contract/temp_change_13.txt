@@ -1,2 +1,0 @@
-Change 14: refactor: standardize event emission patterns
-Timestamp: 2026-01-30T19:42:32.000Z

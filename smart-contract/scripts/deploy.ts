@@ -14,7 +14,7 @@ interface DeploymentConfig {
 }
 
 const defaultConfig: DeploymentConfig = {
-  network: 'baseSepolia',
+  network: 'base-sepolia',
   deployDemo: false,
   demoName: 'Demo TimeVault',
   demoUnlockTime: Math.floor(Date.now() / 1000) + 86400 * 7, // 1 week from now
